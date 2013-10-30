@@ -1,0 +1,83 @@
+<html>
+    <head>
+		<title>Cari Infrastruktur Pemerintah</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+        <script src="jquery-1.8.2.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+        <script>
+		var map;
+		function cari(x,y,i) {
+			var mapOptions = {
+				zoom: 18,
+				mapTypeId: google.maps.MapTypeId.SATELLITE
+			};
+			map = new google.maps.Map(document.getElementById('map'),
+				mapOptions);
+			var pos = new google.maps.LatLng(x,y);
+			var marker = new google.maps.Marker({
+				position: pos,
+				map: map,
+				title: i
+			});
+			map.setCenter(pos);
+		}
+	
+	//
+        $(document).ready(function(){
+            var loading = $("#loading"); //1 gambar loading
+            var tampilkan = $("#tampilkan"); //2 gambar loading
+            //
+            //membuat fungsi untuk menampilkan data
+            function tampildata(){
+                //membuat efek fading
+                tampilkan.hide(); //3 gambar loading
+                loading.fadeIn(); //4 gambar loading
+                
+                $.ajax({
+                    type: "POST",
+                    url: "http://vivimulya.netii.net/56_tampil_tabel_db.php",
+                    data: "aksi=tampil",
+                    success: function(data){
+                        loading.fadeOut();
+                        tampilkan.html(data);
+                        tampilkan.fadeIn(2000);
+                        //$("#tampilkan").html(data);
+                    }
+                });
+        }
+        //jalankan fungsi tampil data
+        tampildata();
+        
+        $("#simpan").click(function(){
+        //ambil value data dari form
+        var nama = $("#nama").val();
+        var pesan = $("#pesan").val();
+        
+        //kirim dengan metode POST ke 2_shoutbox2.php
+        $.ajax({
+            type:"POST",
+            url:"http://vivimulya.netii.net/56_tampil_tabel_db.php",
+            
+            //apabila lebih dari 1 data yg dikirimkan, pisahkan dengan +
+            //tambahkan 1 variabel aksi dengan nilai tambah
+            
+            data: "aksi=tambah&nama=" +nama + "&pesan=" + pesan,
+            success: function(data){
+                $("info").html(data);
+                
+                //setelah proses input data,t ampilkan hasilnya 
+                tampildata();
+            }
+        });
+        });
+        });
+    </script>
+    </head>
+    <body>
+        <div id="loading"><img src="loading.png" /></div> 
+        <ul id="tampilkan"></ul>
+		<div id="map"></div>  
+    </body>
+</html>    
